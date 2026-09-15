@@ -1,8 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path'); // اضافه کردن کتابخانه مسیر
 const app = express();
 
 app.use(bodyParser.json());
+
+// برای اینکه فایل‌های HTML و استاتیک رو بتونه بخونه
+app.use(express.static(__dirname));
 
 let moviesList = [];
 
