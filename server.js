@@ -1,14 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const path = require('path'); // اضافه کردن کتابخانه مسیر
+const path = require('path');
 const app = express();
 
 app.use(bodyParser.json());
 
-// برای اینکه فایل‌های HTML و استاتیک رو بتونه بخونه
-app.use(express.static(__dirname));
-
 let moviesList = [];
+
+// مسیر اصلی سایت که فایل index.html رو مستقیماً برمی‌گردونه
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 app.post('/webhook', (req, res) => {
     const update = req.body;
