@@ -12,14 +12,12 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// لینک اتصال مستقیم به دیتابیس ابری MongoDB Atlas شما
 const MONGO_URI = 'mongodb+srv://mehrshadhasanvandd_db_user:YeJq8PEIWCyAfHhH@cluster0.u9pbye1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 mongoose.connect(MONGO_URI)
     .then(() => console.log('✅ Connected to MongoDB Atlas successfully!'))
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
-// تعریف مدل فیلم در دیتابیس
 const movieSchema = new mongoose.Schema({
     id: { type: Number, unique: true },
     title: String,
@@ -33,7 +31,6 @@ const movieSchema = new mongoose.Schema({
 
 const Movie = mongoose.model('Movie', movieSchema);
 
-// دریافت فیلم‌ها از دیتابیس ابری برای نمایش در سایت
 app.get('/api/movies', async (req, res) => {
     try {
         const movies = await Movie.find().sort({ createdAt: -1 });
@@ -44,10 +41,10 @@ app.get('/api/movies', async (req, res) => {
     }
 });
 
-// دریافت عکس و ثبت فیلم از طریق ربات تلگرام
 bot.on('photo', async (msg) => {
     const chatId = msg.chat.id;
-    const caption = msg.caption || '';
+    // پاکسازی فاصله‌های اضافی و شکستگی‌های خط در کپشن برای جلوگیری از خطا
+    const caption = (msg.caption || '').replace(/\n/g, ' ').trim();
     const photoArray = msg.photo;
     const fileId = photoArray[photoArray.length - 1].file_id;
 
@@ -58,7 +55,6 @@ bot.on('photo', async (msg) => {
             const filePath = res.data.result.file_path;
             const posterUrl = `https://api.telegram.org/file/bot${token}/${filePath}`;
 
-            // فرمت کپشن: نام فیلم | ایرانی/خارجی | دوبله/زیرنویس | ژانر | لینک_ویدیو
             const parts = caption.split('|').map(p => p.trim());
             
             let title = "فیلم سینمایی";
@@ -73,14 +69,17 @@ bot.on('photo', async (msg) => {
                 subType = parts[2];
                 genre = parts[3];
                 videoUrl = parts[4];
-            } else if (parts.length >= 2) {
-                title = parts[0];
-                videoUrl = parts[1];
             } else {
-                videoUrl = caption.trim();
+                // اگر کاربر فرمت کامل را رعایت نکرد، آخرین بخش را لینک و بقیه را عنوان در نظر بگیر
+                if (parts.length >= 2) {
+                    title = parts[0];
+                    videoUrl = parts[parts.length - 1];
+                } else {
+                    videoUrl = caption;
+                }
             }
 
-            if (videoUrl.startsWith('http://') || videoUrl.startsWith('https://')) {
+            if (videoUrl && (videoUrl.startsWith('http://') || videoUrl.startsWith('https://'))) {
                 const newMovie = new Movie({
                     id: Date.now(),
                     title,
@@ -91,18 +90,17 @@ bot.on('photo', async (msg) => {
                     videoUrl
                 });
 
-                await newMovie.save(); // ذخیره امن در فضای ابری مانگو
-
-                bot.sendMessage(chatId, `✅ فیلم "${title}" با موفقیت در دیتابیس ابری NETFLIX SIT ثبت شد!`);
+                await newMovie.save();
+                bot.sendMessage(chatId, `✅ فیلم "${title}" با موفقیت در دیتابیس ابری ثبت شد!`);
             } else {
-                bot.sendMessage(chatId, `⚠️ فرمت کپشن نامعتبر است!\n\nفرمت صحیح:\nنام فیلم | ایرانی/خارجی | دوبله/زیرنویس | ژانر | لینک_مستقیم`);
+                bot.sendMessage(chatId, `⚠️ لینک ویدیو در کپشن پیدا نشد!\nلطفاً مطمئن شوید انتهای کپشن لینک معتبر با http قرار دارد.`);
             }
         } else {
             bot.sendMessage(chatId, '❌ خطا در دریافت پوستر.');
         }
     } catch (error) {
         console.error('Error handling photo:', error.message);
-        bot.sendMessage(chatId, '❌ خطا در پردازش اطلاعات.');
+        bot.sendMessage(chatId, `❌ خطا در پردازش اطلاعات: ${error.message}`);
     }
 });
 
