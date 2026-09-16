@@ -3,209 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NETFLIX SIT - تماشای آنلاین فیلم و سریال</title>
+    <title>NETFLIX SIT - پلتفرم پخش آنلاین</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Vazirmatn:wght@300;400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Vazirmatn:wght@300;400;600;800;900&display=swap');
 
         :root {
-            --bg-color: #0f1015;
-            --card-bg: #1a1c23;
-            --accent-color: #e50914;
-            --text-color: #ffffff;
-            --text-secondary: #9ca3af;
+            --bg-deep: #090a0f;
+            --glass-bg: rgba(22, 25, 37, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-glow: #e50914;
+            --accent-gradient: linear-gradient(135deg, #e50914 0%, #b20710 100%);
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Vazirmatn', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--bg-deep);
+            color: var(--text-main);
             margin: 0;
             padding: 0;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(229, 9, 20, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(30, 58, 138, 0.1) 0%, transparent 40%);
+            background-attachment: fixed;
+            min-height: 100vh;
         }
 
-        /* هدر فیلیمو/نتفلیکس */
+        /* هدر شیشه‌ای فوق‌العاده مدرن */
         header {
-            background: rgba(15, 16, 21, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 30px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 16px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #1f222e;
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
 
-        .logo-area {
+        .logo-container {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--accent-gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(229, 9, 20, 0.5);
+        }
+
+        .logo-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: #fff;
         }
 
         .logo {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 32px;
-            color: var(--accent-color);
+            font-size: 30px;
+            color: #fff;
             letter-spacing: 2px;
-            text-transform: uppercase;
             margin: 0;
+            text-shadow: 0 2px 10px rgba(229, 9, 20, 0.5);
         }
 
-        .search-box {
-            width: 280px;
+        .logo span {
+            color: var(--accent-glow);
+        }
+
+        /* سرچ‌باکس شیشه‌ای */
+        .search-wrapper {
+            position: relative;
+            width: 320px;
         }
 
         .search-input {
             width: 100%;
-            padding: 8px 16px;
-            background-color: #1f222e;
-            border: 1px solid #2d3142;
-            border-radius: 20px;
+            padding: 10px 18px 10px 42px;
+            background: rgba(15, 17, 23, 0.7);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
             color: #fff;
             font-size: 13px;
             font-family: 'Vazirmatn', sans-serif;
             outline: none;
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
         }
 
         .search-input:focus {
-            border-color: var(--accent-color);
+            border-color: var(--accent-glow);
+            box-shadow: 0 0 15px rgba(229, 9, 20, 0.3);
+            background: rgba(15, 17, 23, 0.9);
         }
 
-        /* بنر ویژه بالای صفحه (Hero Section) */
-        .hero-banner {
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            fill: var(--text-muted);
+        }
+
+        /* بنر قهرمان (Hero Section) با استایل شیشه‌ای */
+        .hero-section {
             max-width: 1300px;
-            margin: 25px auto;
+            margin: 30px auto;
             padding: 0 20px;
         }
 
         .hero-card {
-            background: linear-gradient(to left, rgba(15,16,21,0.8), rgba(15,16,21,0.95)), url('https://assets.nflxext.com/ffe/siteui/vlv3/efb4855d-e702-43e5-99b9-babf6155988e/f55050f7-ebf3-424a-81a2-5813736868cb/DE-en-20220711-popsignuptwoweeks-perspective_alpha_website_small.jpg');
+            background: linear-gradient(135deg, rgba(22, 25, 37, 0.8), rgba(13, 15, 22, 0.9)), 
+                        url('https://assets.nflxext.com/ffe/siteui/vlv3/efb4855d-e702-43e5-99b9-babf6155988e/f55050f7-ebf3-424a-81a2-5813736868cb/DE-en-20220711-popsignuptwoweeks-perspective_alpha_website_small.jpg');
             background-size: cover;
             background-position: center;
-            border-radius: 12px;
-            padding: 40px;
-            border: 1px solid #1f222e;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 20px;
+            padding: 45px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; width: 5px; height: 100%;
+            background: var(--accent-gradient);
         }
 
         .hero-title {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 900;
+            margin: 0 0 12px 0;
             color: #fff;
-            margin: 0;
         }
 
         .hero-desc {
             font-size: 14px;
-            color: var(--text-secondary);
+            color: var(--text-muted);
             max-width: 600px;
-            line-height: 1.6;
+            line-height: 1.7;
+            margin: 0;
         }
 
-        /* بخش ردیف‌های اسکرول افقی (مشابه فیلیمو) */
-        .section-container {
+        /* بخش کانتینرها و اسکرول ردیف‌ها */
+        .content-section {
             max-width: 1300px;
-            margin: 35px auto;
+            margin: 40px auto;
             padding: 0 20px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .section-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(229, 9, 20, 0.15);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .section-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--accent-glow);
         }
 
         .section-title {
             font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 15px;
+            font-weight: 800;
             color: #fff;
-            border-right: 4px solid var(--accent-color);
-            padding-right: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            letter-spacing: 0.5px;
+            margin: 0;
         }
 
+        /* گرید کارت‌های فیلم شیشه‌ای */
         .movies-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 22px;
         }
 
         .movie-card {
-            background-color: var(--card-bg);
-            border-radius: 8px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
-            border: 1px solid #262938;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
         }
 
         .movie-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 10px 25px rgba(229, 9, 20, 0.3);
-            border-color: var(--accent-color);
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(229, 9, 20, 0.5);
+            box-shadow: 0 15px 35px rgba(229, 9, 20, 0.25);
         }
 
         .poster-wrapper {
             position: relative;
             width: 100%;
-            height: 250px;
+            height: 270px;
+            overflow: hidden;
         }
 
         .movie-poster {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            background-color: #1f222e;
+            transition: transform 0.5s ease;
+        }
+
+        .movie-card:hover .movie-poster {
+            transform: scale(1.08);
         }
 
         .badge {
             position: absolute;
-            top: 8px;
-            left: 8px;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: #ffcc00;
-            font-size: 10px;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            backdrop-filter: blur(4px);
+            top: 10px;
+            left: 10px;
+            background: rgba(9, 10, 15, 0.85);
+            backdrop-filter: blur(8px);
+            color: #fbbf24;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .movie-info {
-            padding: 12px;
+            padding: 14px;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
         }
 
         .movie-title-text {
-            font-size: 13px;
-            font-weight: bold;
+            font-size: 14px;
+            font-weight: 700;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            color: #fff;
         }
 
         .movie-genre {
-            font-size: 11px;
-            color: var(--text-secondary);
+            font-size: 12px;
+            color: var(--text-muted);
         }
 
-        /* مدال پخش ویدیو (سینمایی و افقی) */
+        /* مدال پخش سینمایی شیشه‌ای */
         .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
+            z-index: 2000;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.95);
+            background-color: rgba(5, 6, 9, 0.92);
+            backdrop-filter: blur(20px);
             align-items: center;
             justify-content: center;
             flex-direction: column;
@@ -214,12 +301,12 @@
         .modal-content {
             width: 90%;
             max-width: 950px;
-            background: #000;
-            border-radius: 12px;
+            background: rgba(15, 17, 23, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.9);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.9);
             position: relative;
-            border: 1px solid #262938;
         }
 
         .modal-content video {
@@ -230,62 +317,91 @@
 
         .close-btn {
             color: #fff;
-            font-size: 32px;
-            font-weight: bold;
+            font-size: 26px;
             position: absolute;
             top: 15px;
             left: 20px;
             cursor: pointer;
             z-index: 10;
+            background: rgba(0,0,0,0.6);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .close-btn:hover {
-            color: var(--accent-color);
+            background: var(--accent-glow);
         }
 
         .no-movie {
             text-align: center;
-            color: var(--text-secondary);
+            color: var(--text-muted);
             grid-column: 1 / -1;
-            font-size: 15px;
+            font-size: 14px;
             padding: 30px;
+            background: var(--glass-bg);
+            border-radius: 12px;
+            border: 1px dashed var(--glass-border);
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo-area">
-            <h1 class="logo">NETFLIX SIT</h1>
+        <div class="logo-container">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24"><path d="M6 4h4v16H6V4m8 0h4v16h-4V4z"/></svg>
+            </div>
+            <h1 class="logo">NETFLIX <span>SIT</span></h1>
         </div>
-        <div class="search-box">
-            <input type="text" id="searchInput" class="search-input" placeholder="جستجو در فیلم و سریال..." oninput="filterMovies()">
+        <div class="search-wrapper">
+            <input type="text" id="searchInput" class="search-input" placeholder="جستجوی فیلم، سریال یا ژانر..." oninput="filterMovies()">
+            <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
         </div>
     </header>
 
-    <!-- بنر خوش‌آمدگویی مشابه فیلیمو -->
-    <div class="hero-banner">
+    <div class="hero-section">
         <div class="hero-card">
-            <h2 class="hero-title">دنیای فیلم و سریال در دستان شما</h2>
-            <p class="hero-desc">به روزترین آثار سینمایی ایران و جهان را با بالاترین کیفیت، زیرنویس چسبیده و دوبله فارسی در پلتفرم NETFLIX SIT تماشا کنید.</p>
+            <h2 class="hero-title">تجربه سینمایی لوکس در NETFLIX SIT</h2>
+            <p class="hero-desc">پیشرفته‌ترین آرشیو فیلم و سریال‌های روز دنیا با بالاترین سرعت استریم، زیرنویس چسبیده اختصاصی و دوبله‌های حرفه‌ای در فضایی مدرن.</p>
         </div>
     </div>
 
     <!-- بخش آثار ایرانی -->
-    <div class="section-container">
-        <div class="section-title">🇮🇷 آثار ایرانی</div>
+    <div class="content-section">
+        <div class="section-header">
+            <div class="section-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            </div>
+            <h3 class="section-title">آثار سینمایی و سریال‌های ایرانی</h3>
+        </div>
         <div class="movies-grid" id="iranianList"></div>
     </div>
 
     <!-- بخش آثار خارجی -->
-    <div class="section-container">
-        <div class="section-title">🌍 آثار خارجی و جهانی</div>
+    <div class="content-section">
+        <div class="section-header">
+            <div class="section-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm7.93 6h-3.18a15.2 15.2 0 0 0-1.57-3.96A8.03 8.03 0 0 1 19.93 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.35 4 12.68 4 12s.1-1.35.26-2h3.38c-.08.66-.14 1.33-.14 2s.06 1.34.14 2H4.26zm.81 2h3.18c.4 1.43.98 2.77 1.57 3.96A8.03 8.03 0 0 1 5.07 16zm3.18-8H5.07a8.03 8.03 0 0 1 4.75-3.96c-.59 1.19-1.17 2.53-1.57 3.96zm4.56 11.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zm1.07-5.96h-4.32c-.07-.65-.12-1.32-.12-2s.05-1.35.12-2h4.32c.07.65.12 1.32.12 2s-.05 1.35-.12 2zm.31 3.96c.59-1.19 1.17-2.53 1.57-3.96h3.18a8.03 8.03 0 0 1-4.75 3.96zM15.93 8l1.35-3.09c1.3.73 2.39 1.76 3.1 3.09h-4.45z"/></svg>
+            </div>
+            <h3 class="section-title">آثار جهانی و هالیوود</h3>
+        </div>
         <div class="movies-grid" id="foreignList"></div>
     </div>
 
     <!-- بخش دوبله و زیرنویس -->
-    <div class="section-container">
-        <div class="section-title">🎙️ دوبله فارسی و زیرنویس چسبیده</div>
+    <div class="content-section">
+        <div class="section-header">
+            <div class="section-icon">
+                <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM4 12h4v2H4v-2zm10 4H4v-2h10v2zm6 0h-4v-2h4v2zm0-4h-8v-2h8v2z"/></svg>
+            </div>
+            <h3 class="section-title">دوبله فارسی و زیرنویس چسبیده</h3>
+        </div>
         <div class="movies-grid" id="dubbedList"></div>
     </div>
 
