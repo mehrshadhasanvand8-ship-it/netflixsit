@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NETFLIX SIT</title>
+    <title>NETFLIX SIT - تماشای آنلاین فیلم و سریال</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Vazirmatn:wght@300;400;700;900&display=swap');
 
         :root {
-            --bg-color: #141414;
-            --card-bg: #1f1f1f;
+            --bg-color: #0f1015;
+            --card-bg: #1a1c23;
             --accent-color: #e50914;
             --text-color: #ffffff;
-            --text-secondary: #b3b3b3;
+            --text-secondary: #9ca3af;
         }
 
         body {
@@ -23,54 +23,49 @@
             padding: 0;
         }
 
-        /* هدر نتفلیکس */
+        /* هدر فیلیمو/نتفلیکس */
         header {
-            background: linear-gradient(to bottom, rgba(0,0,0,0.9), var(--bg-color));
-            padding: 20px 30px;
+            background: rgba(15, 16, 21, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #222;
+            border-bottom: 1px solid #1f222e;
             position: sticky;
             top: 0;
             z-index: 100;
         }
 
-        .header-top {
+        .logo-area {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            width: 100%;
-            max-width: 1200px;
-            margin-bottom: 15px;
+            gap: 20px;
         }
 
         .logo {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 38px;
+            font-size: 32px;
             color: var(--accent-color);
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
             margin: 0;
         }
 
         .search-box {
-            width: 100%;
-            max-width: 400px;
+            width: 280px;
         }
 
         .search-input {
             width: 100%;
-            padding: 10px 18px;
-            background-color: #2b2b2b;
-            border: 1px solid #444;
-            border-radius: 4px;
+            padding: 8px 16px;
+            background-color: #1f222e;
+            border: 1px solid #2d3142;
+            border-radius: 20px;
             color: #fff;
-            font-size: 14px;
+            font-size: 13px;
             font-family: 'Vazirmatn', sans-serif;
             outline: none;
-            box-sizing: border-box;
             transition: border-color 0.3s;
         }
 
@@ -78,79 +73,94 @@
             border-color: var(--accent-color);
         }
 
-        /* دکمه‌های فیلتر و دسته‌بندی */
-        .filters-container {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding: 10px 0;
-            max-width: 1200px;
-            width: 100%;
-            scrollbar-width: none;
-        }
-
-        .filters-container::-webkit-scrollbar {
-            display: none;
-        }
-
-        .filter-btn {
-            background-color: #2b2b2b;
-            color: var(--text-secondary);
-            border: 1px solid #444;
-            padding: 6px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            white-space: nowrap;
-            font-size: 13px;
-            font-family: 'Vazirmatn', sans-serif;
-            transition: all 0.2s;
-        }
-
-        .filter-btn.active, .filter-btn:hover {
-            background-color: var(--accent-color);
-            color: #fff;
-            border-color: var(--accent-color);
-        }
-
-        /* گرید نمایش فیلم‌ها */
-        .movie-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 30px auto;
+        /* بنر ویژه بالای صفحه (Hero Section) */
+        .hero-banner {
+            max-width: 1300px;
+            margin: 25px auto;
             padding: 0 20px;
+        }
+
+        .hero-card {
+            background: linear-gradient(to left, rgba(15,16,21,0.8), rgba(15,16,21,0.95)), url('https://assets.nflxext.com/ffe/siteui/vlv3/efb4855d-e702-43e5-99b9-babf6155988e/f55050f7-ebf3-424a-81a2-5813736868cb/DE-en-20220711-popsignuptwoweeks-perspective_alpha_website_small.jpg');
+            background-size: cover;
+            background-position: center;
+            border-radius: 12px;
+            padding: 40px;
+            border: 1px solid #1f222e;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .hero-title {
+            font-size: 28px;
+            font-weight: 900;
+            color: #fff;
+            margin: 0;
+        }
+
+        .hero-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        /* بخش ردیف‌های اسکرول افقی (مشابه فیلیمو) */
+        .section-container {
+            max-width: 1300px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #fff;
+            border-right: 4px solid var(--accent-color);
+            padding-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
         }
 
         .movie-card {
             background-color: var(--card-bg);
-            border-radius: 6px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s;
             display: flex;
             flex-direction: column;
-            border: 1px solid #2b2b2b;
+            border: 1px solid #262938;
         }
 
         .movie-card:hover {
-            transform: scale(1.04);
-            box-shadow: 0 8px 24px rgba(229, 9, 20, 0.4);
-            border-color: #444;
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(229, 9, 20, 0.3);
+            border-color: var(--accent-color);
         }
 
         .poster-wrapper {
             position: relative;
             width: 100%;
-            height: 280px;
+            height: 250px;
         }
 
         .movie-poster {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            background-color: #222;
+            background-color: #1f222e;
         }
 
         .badge {
@@ -159,29 +169,30 @@
             left: 8px;
             background-color: rgba(0, 0, 0, 0.8);
             color: #ffcc00;
-            font-size: 11px;
+            font-size: 10px;
             padding: 3px 8px;
             border-radius: 4px;
             font-weight: bold;
+            backdrop-filter: blur(4px);
         }
 
         .movie-info {
             padding: 12px;
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
         }
 
-        .movie-title {
-            font-size: 14px;
-            font-weight: 700;
+        .movie-title-text {
+            font-size: 13px;
+            font-weight: bold;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .movie-genre {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
         }
 
@@ -204,11 +215,11 @@
             width: 90%;
             max-width: 950px;
             background: #000;
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9);
             position: relative;
-            border: 1px solid #333;
+            border: 1px solid #262938;
         }
 
         .modal-content video {
@@ -236,31 +247,46 @@
             text-align: center;
             color: var(--text-secondary);
             grid-column: 1 / -1;
-            font-size: 18px;
-            margin-top: 60px;
+            font-size: 15px;
+            padding: 30px;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="header-top">
+        <div class="logo-area">
             <h1 class="logo">NETFLIX SIT</h1>
-            <div class="search-box">
-                <input type="text" id="searchInput" class="search-input" placeholder="جستجوی فیلم، سریال یا ژانر..." oninput="filterMovies()">
-            </div>
         </div>
-        <div class="filters-container">
-            <button class="filter-btn active" onclick="setCategory('همه', this)">همه آثار</button>
-            <button class="filter-btn" onclick="setCategory('ایرانی', this)">🇮🇷 ایرانی</button>
-            <button class="filter-btn" onclick="setCategory('خارجی', this)">🌍 خارجی</button>
-            <button class="filter-btn" onclick="setCategory('دوبله', this)">🎙️ دوبله فارسی</button>
-            <button class="filter-btn" onclick="setCategory('زیرنویس', this)">📝 زیرنویس چسبیده</button>
+        <div class="search-box">
+            <input type="text" id="searchInput" class="search-input" placeholder="جستجو در فیلم و سریال..." oninput="filterMovies()">
         </div>
     </header>
 
-    <div class="movie-container" id="movieList">
-        <!-- فیلم‌ها اینجا لود می‌شوند -->
+    <!-- بنر خوش‌آمدگویی مشابه فیلیمو -->
+    <div class="hero-banner">
+        <div class="hero-card">
+            <h2 class="hero-title">دنیای فیلم و سریال در دستان شما</h2>
+            <p class="hero-desc">به روزترین آثار سینمایی ایران و جهان را با بالاترین کیفیت، زیرنویس چسبیده و دوبله فارسی در پلتفرم NETFLIX SIT تماشا کنید.</p>
+        </div>
+    </div>
+
+    <!-- بخش آثار ایرانی -->
+    <div class="section-container">
+        <div class="section-title">🇮🇷 آثار ایرانی</div>
+        <div class="movies-grid" id="iranianList"></div>
+    </div>
+
+    <!-- بخش آثار خارجی -->
+    <div class="section-container">
+        <div class="section-title">🌍 آثار خارجی و جهانی</div>
+        <div class="movies-grid" id="foreignList"></div>
+    </div>
+
+    <!-- بخش دوبله و زیرنویس -->
+    <div class="section-container">
+        <div class="section-title">🎙️ دوبله فارسی و زیرنویس چسبیده</div>
+        <div class="movies-grid" id="dubbedList"></div>
     </div>
 
     <!-- مدال پخش ویدیو -->
@@ -275,76 +301,79 @@
 
     <script>
         let allMovies = [];
-        let currentFilter = 'همه';
 
         async function fetchMovies() {
             try {
                 const response = await fetch('/api/movies');
                 allMovies = await response.json();
-                renderMovies(allMovies);
+                renderSections(allMovies);
             } catch (error) {
                 console.error('خطا در دریافت لیست فیلم‌ها:', error);
             }
         }
 
-        function renderMovies(moviesToRender) {
-            const container = document.getElementById('movieList');
-            container.innerHTML = '';
+        function renderSections(moviesToRender) {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            
+            const filtered = moviesToRender.filter(movie => {
+                return (movie.title && movie.title.toLowerCase().includes(searchText)) ||
+                       (movie.genre && movie.genre.toLowerCase().includes(searchText));
+            });
 
-            if (moviesToRender.length === 0) {
-                container.innerHTML = '<div class="no-movie">هنوز فیلمی در NETFLIX SIT ثبت نشده است!</div>';
-                return;
-            }
+            const iranianContainer = document.getElementById('iranianList');
+            const foreignContainer = document.getElementById('foreignList');
+            const dubbedContainer = document.getElementById('dubbedList');
 
-            moviesToRender.slice().reverse().forEach(movie => {
-                const card = document.createElement('div');
-                card.className = 'movie-card';
-                
-                const poster = movie.posterUrl || 'https://via.placeholder.com/300x400?text=NETFLIX+SIT';
-                const badgeText = `${movie.category || 'خارجی'} • ${movie.subType || 'زیرنویس'}`;
+            iranianContainer.innerHTML = '';
+            foreignContainer.innerHTML = '';
+            dubbedContainer.innerHTML = '';
 
-                card.innerHTML = `
+            let iranianCount = 0;
+            let foreignCount = 0;
+            let dubbedCount = 0;
+
+            filtered.slice().reverse().forEach(movie => {
+                const cardHTML = createMovieCard(movie);
+
+                if (movie.category === 'ایرانی') {
+                    iranianContainer.innerHTML += cardHTML;
+                    iranianCount++;
+                } else {
+                    foreignContainer.innerHTML += cardHTML;
+                    foreignCount++;
+                }
+
+                if (movie.subType === 'دوبله' || movie.subType === 'زیرنویس') {
+                    dubbedContainer.innerHTML += cardHTML;
+                    dubbedCount++;
+                }
+            });
+
+            if (iranianCount === 0) iranianContainer.innerHTML = '<div class="no-movie">موردی یافت نشد.</div>';
+            if (foreignCount === 0) foreignContainer.innerHTML = '<div class="no-movie">موردی یافت نشد.</div>';
+            if (dubbedCount === 0) dubbedContainer.innerHTML = '<div class="no-movie">موردی یافت نشد.</div>';
+        }
+
+        function createMovieCard(movie) {
+            const poster = movie.posterUrl || 'https://via.placeholder.com/300x400?text=NETFLIX+SIT';
+            const badgeText = `${movie.category || 'خارجی'} • ${movie.subType || 'زیرنویس'}`;
+
+            return `
+                <div class="movie-card" onclick="openModal('${movie.videoUrl}')">
                     <div class="poster-wrapper">
                         <img src="${poster}" class="movie-poster" alt="${movie.title}">
                         <div class="badge">${badgeText}</div>
                     </div>
                     <div class="movie-info">
-                        <div class="movie-title" title="${movie.title}">${movie.title}</div>
+                        <div class="movie-title-text" title="${movie.title}">${movie.title}</div>
                         <div class="movie-genre">${movie.genre || 'سینمایی'}</div>
                     </div>
-                `;
-                
-                card.onclick = () => openModal(movie.videoUrl);
-                container.appendChild(card);
-            });
-        }
-
-        function setCategory(category, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentFilter = category;
-            filterMovies();
+                </div>
+            `;
         }
 
         function filterMovies() {
-            const searchText = document.getElementById('searchInput').value.toLowerCase();
-            
-            const filtered = allMovies.filter(movie => {
-                const matchesSearch = (movie.title && movie.title.toLowerCase().includes(searchText)) ||
-                                      (movie.genre && movie.genre.toLowerCase().includes(searchText));
-                
-                if (!matchesSearch) return false;
-
-                if (currentFilter === 'همه') return true;
-                if (currentFilter === 'ایرانی' && movie.category === 'ایرانی') return true;
-                if (currentFilter === 'خارجی' && movie.category === 'خارجی') return true;
-                if (currentFilter === 'دوبله' && movie.subType === 'دوبله') return true;
-                if (currentFilter === 'زیرنویس' && movie.subType === 'زیرنویس') return true;
-
-                return false;
-            });
-
-            renderMovies(filtered);
+            renderSections(allMovies);
         }
 
         function openModal(url) {
