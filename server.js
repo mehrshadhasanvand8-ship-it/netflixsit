@@ -1,7 +1,7 @@
 const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
-const fs = require('fs');
+const mongoose = require('mongoose');
 const path = require('path');
 
 const token = '8842470784:AAEgYN4qyK3cKBvtP2kRI_TzCEuqm0bpGFc';
@@ -12,31 +12,39 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const dataFilePath = path.join(__dirname, 'movies.json');
+// لینک اتصال مستقیم به دیتابیس ابری MongoDB Atlas شما
+const MONGO_URI = 'mongodb+srv://mehrshadhasanvandd_db_user:YeJq8PEIWCyAfHhH@cluster0.u9pbye1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
-// تابع امن برای خواندن فیلم‌ها از فایل دائمی
-function getMovies() {
+mongoose.connect(MONGO_URI)
+    .then(() => console.log('✅ Connected to MongoDB Atlas successfully!'))
+    .catch(err => console.error('❌ MongoDB Connection Error:', err));
+
+// تعریف مدل فیلم در دیتابیس
+const movieSchema = new mongoose.Schema({
+    id: { type: Number, unique: true },
+    title: String,
+    category: String,
+    subType: String,
+    genre: String,
+    posterUrl: String,
+    videoUrl: String,
+    createdAt: { type: Date, default: Date.now }
+});
+
+const Movie = mongoose.model('Movie', movieSchema);
+
+// دریافت فیلم‌ها از دیتابیس ابری برای نمایش در سایت
+app.get('/api/movies', async (req, res) => {
     try {
-        if (fs.existsSync(dataFilePath)) {
-            const data = fs.readFileSync(dataFilePath, 'utf8');
-            if (data.trim() === '') return [];
-            return JSON.parse(data);
-        }
+        const movies = await Movie.find().sort({ createdAt: -1 });
+        res.json(movies);
     } catch (error) {
-        console.error('Error reading movies file:', error);
+        console.error('Error fetching movies:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-    return [];
-}
+});
 
-// تابع ذخیره امن فیلم‌ها در فایل دائمی
-function saveMovies(movies) {
-    try {
-        fs.writeFileSync(dataFilePath, JSON.stringify(movies, null, 2), 'utf8');
-    } catch (error) {
-        console.error('Error saving movies file:', error);
-    }
-}
-
+// دریافت عکس و ثبت فیلم از طریق ربات تلگرام
 bot.on('photo', async (msg) => {
     const chatId = msg.chat.id;
     const caption = msg.caption || '';
@@ -73,21 +81,19 @@ bot.on('photo', async (msg) => {
             }
 
             if (videoUrl.startsWith('http://') || videoUrl.startsWith('https://')) {
-                let movies = getMovies();
-                
-                movies.push({
+                const newMovie = new Movie({
                     id: Date.now(),
-                    title: title,
-                    category: category,
-                    subType: subType,
-                    genre: genre,
-                    posterUrl: posterUrl,
-                    videoUrl: videoUrl
+                    title,
+                    category,
+                    subType,
+                    genre,
+                    posterUrl,
+                    videoUrl
                 });
 
-                saveMovies(movies); // ذخیره دائمی در فایل
+                await newMovie.save(); // ذخیره امن در فضای ابری مانگو
 
-                bot.sendMessage(chatId, `✅ فیلم "${title}" با موفقیت در NETFLIX SIT ثبت شد و ذخیره گردید!`);
+                bot.sendMessage(chatId, `✅ فیلم "${title}" با موفقیت در دیتابیس ابری NETFLIX SIT ثبت شد!`);
             } else {
                 bot.sendMessage(chatId, `⚠️ فرمت کپشن نامعتبر است!\n\nفرمت صحیح:\nنام فیلم | ایرانی/خارجی | دوبله/زیرنویس | ژانر | لینک_مستقیم`);
             }
@@ -98,11 +104,6 @@ bot.on('photo', async (msg) => {
         console.error('Error handling photo:', error.message);
         bot.sendMessage(chatId, '❌ خطا در پردازش اطلاعات.');
     }
-});
-
-app.get('/api/movies', (req, res) => {
-    const movies = getMovies();
-    res.json(movies);
 });
 
 app.listen(PORT, () => {
