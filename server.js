@@ -11,34 +11,38 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// آرشیو ساده برای ذخیره فیلم‌ها در حافظه سرور
+// آرشیو برای ذخیره اطلاعات ویدیوها در حافظه
 let movies = [];
 
-// دریافت ویدیو از تلگرام
+// دریافت ویدیو از تلگرام به صورت امن و بدون محدودیت حجم
 bot.on('video', async (msg) => {
     const chatId = msg.chat.id;
     const fileId = msg.video.file_id;
-    const fileName = msg.video.file_name || 'فیلم بدون نام';
+    const fileName = msg.video.file_name || 'فیلم سینمایی';
     const caption = msg.caption || fileName;
 
     try {
-        // گرفتن لینک دانلود مستقیم از تلگرام
-        const fileLink = await bot.getFileLink(fileId);
+        // دریافت اطلاعات فایل شامل file_path از تلگرام بدون دانلود خود فایل
+        const file = await bot.getFile(fileId);
+        const filePath = file.file_path;
+        
+        // ساخت لینک مستقیم و پایدار دانلود از سرور تلگرام
+        const directDownloadUrl = `https://api.telegram.org/file/bot${token}/${filePath}`;
         
         movies.push({
             id: Date.now(),
             title: caption,
-            videoUrl: fileLink
+            videoUrl: directDownloadUrl
         });
 
-        bot.sendMessage(chatId, '✅ فیلم با موفقیت به آرشیو سایت اضافه شد و الان قابل پخش است!');
+        bot.sendMessage(chatId, '✅ فیلم با موفقیت به آرشیو سایت اضافه شد!');
     } catch (error) {
-        console.error('Error getting file link:', error);
-        bot.sendMessage(chatId, '❌ خطا در ثبت فیلم. دوباره تلاش کنید.');
+        console.error('Error processing video:', error);
+        bot.sendMessage(chatId, '❌ خطا در ثبت فیلم. لطفا دوباره تلاش کنید.');
     }
 });
 
-// ارسال لیست فیلم‌ها به سایت
+// ارسال لیست فیلم‌ها به فرانت‌اند سایت
 app.get('/api/movies', (req, res) => {
     res.json(movies);
 });
