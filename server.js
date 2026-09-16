@@ -1,6 +1,7 @@
 const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
+const fs = require('fs');
 const path = require('path');
 
 const token = '8842470784:AAEgYN4qyK3cKBvtP2kRI_TzCEuqm0bpGFc';
@@ -11,9 +12,32 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-let movies = [];
+// مسیر فایل برای ذخیره دائمی فیلم‌ها
+const dataFilePath = path.join(__dirname, 'movies.json');
 
-// دریافت عکس پوستر و لینک از طریق تلگرام با روش امن
+// تابع خواندن فیلم‌ها از فایل
+function getMovies() {
+    try {
+        if (fs.existsSync(dataFilePath)) {
+            const data = fs.readFileSync(dataFilePath, 'utf8');
+            return JSON.parse(data);
+        }
+    } catch (error) {
+        console.error('Error reading movies file:', error);
+    }
+    return [];
+}
+
+// تابع ذخیره فیلم‌ها در فایل
+function saveMovies(movies) {
+    try {
+        fs.writeFileSync(dataFilePath, JSON.stringify(movies, null, 2), 'utf8');
+    } catch (error) {
+        console.error('Error saving movies file:', error);
+    }
+}
+
+// دریافت عکس پوستر و لینک از طریق تلگرام
 bot.on('photo', async (msg) => {
     const chatId = msg.chat.id;
     const caption = msg.caption || '';
@@ -21,14 +45,12 @@ bot.on('photo', async (msg) => {
     const fileId = photoArray[photoArray.length - 1].file_id;
 
     try {
-        // گرفتن مسیر فایل از طریق API تلگرام به صورت مستقیم
         const res = await axios.get(`https://api.telegram.org/bot${token}/getFile?file_id=${fileId}`);
         
         if (res.data && res.data.ok) {
             const filePath = res.data.result.file_path;
             const posterUrl = `https://api.telegram.org/file/bot${token}/${filePath}`;
 
-            // فرمت کپشن: نام فیلم | لینک_مستقیم_ویدیو
             const parts = caption.split('|');
             let title = "فیلم سینمایی";
             let videoUrl = "";
@@ -41,6 +63,8 @@ bot.on('photo', async (msg) => {
             }
 
             if (videoUrl.startsWith('http://') || videoUrl.startsWith('https://')) {
+                let movies = getMovies();
+                
                 movies.push({
                     id: Date.now(),
                     title: title,
@@ -48,7 +72,9 @@ bot.on('photo', async (msg) => {
                     videoUrl: videoUrl
                 });
 
-                bot.sendMessage(chatId, `✅ فیلم "${title}" با موفقیت روی سایت قرار گرفت!`);
+                saveMovies(movies); // ذخیره در فایل دائمی
+
+                bot.sendMessage(chatId, `✅ فیلم "${title}" با موفقیت ذخیره شد و هرگز پاک نخواهد شد!`);
             } else {
                 bot.sendMessage(chatId, `⚠️ کپشن نامعتبر است!\nلطفا زیر عکس بنویسید:\nنام فیلم | لینک_مستقیم_ویدیو`);
             }
@@ -61,7 +87,9 @@ bot.on('photo', async (msg) => {
     }
 });
 
+// API برای فرستادن اطلاعات فیلم‌ها به سایت
 app.get('/api/movies', (req, res) => {
+    const movies = getMovies();
     res.json(movies);
 });
 
