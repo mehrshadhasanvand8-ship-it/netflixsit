@@ -14,10 +14,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const dataFilePath = path.join(__dirname, 'movies.json');
 
+// تابع امن برای خواندن فیلم‌ها از فایل دائمی
 function getMovies() {
     try {
         if (fs.existsSync(dataFilePath)) {
             const data = fs.readFileSync(dataFilePath, 'utf8');
+            if (data.trim() === '') return [];
             return JSON.parse(data);
         }
     } catch (error) {
@@ -26,6 +28,7 @@ function getMovies() {
     return [];
 }
 
+// تابع ذخیره امن فیلم‌ها در فایل دائمی
 function saveMovies(movies) {
     try {
         fs.writeFileSync(dataFilePath, JSON.stringify(movies, null, 2), 'utf8');
@@ -47,13 +50,13 @@ bot.on('photo', async (msg) => {
             const filePath = res.data.result.file_path;
             const posterUrl = `https://api.telegram.org/file/bot${token}/${filePath}`;
 
-            // فرمت جدید کپشن: نام فیلم | ایرانی/خارجی | دوبله/زیرنویس | ژانر | لینک_ویدیو
+            // فرمت کپشن: نام فیلم | ایرانی/خارجی | دوبله/زیرنویس | ژانر | لینک_ویدیو
             const parts = caption.split('|').map(p => p.trim());
             
             let title = "فیلم سینمایی";
-            let category = "خارجی"; // ایرانی یا خارجی
-            let subType = "زیرنویس"; // دوبله یا زیرنویس
-            let genre = "اکشن"; // ژانر
+            let category = "خارجی";
+            let subType = "زیرنویس";
+            let genre = "سینمایی";
             let videoUrl = "";
 
             if (parts.length >= 5) {
@@ -62,8 +65,7 @@ bot.on('photo', async (msg) => {
                 subType = parts[2];
                 genre = parts[3];
                 videoUrl = parts[4];
-            } else if (parts.length === 2) {
-                // سازگاری با فرمت قبلی
+            } else if (parts.length >= 2) {
                 title = parts[0];
                 videoUrl = parts[1];
             } else {
@@ -83,9 +85,9 @@ bot.on('photo', async (msg) => {
                     videoUrl: videoUrl
                 });
 
-                saveMovies(movies);
+                saveMovies(movies); // ذخیره دائمی در فایل
 
-                bot.sendMessage(chatId, `✅ فیلم "${title}" با مشخصات کامل ثبت شد!`);
+                bot.sendMessage(chatId, `✅ فیلم "${title}" با موفقیت در NETFLIX SIT ثبت شد و ذخیره گردید!`);
             } else {
                 bot.sendMessage(chatId, `⚠️ فرمت کپشن نامعتبر است!\n\nفرمت صحیح:\nنام فیلم | ایرانی/خارجی | دوبله/زیرنویس | ژانر | لینک_مستقیم`);
             }
