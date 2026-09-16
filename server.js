@@ -11,10 +11,8 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// آرشیو برای ذخیره اطلاعات ویدیوها در حافظه
 let movies = [];
 
-// دریافت ویدیو از تلگرام به صورت امن و بدون محدودیت حجم
 bot.on('video', async (msg) => {
     const chatId = msg.chat.id;
     const fileId = msg.video.file_id;
@@ -22,27 +20,29 @@ bot.on('video', async (msg) => {
     const caption = msg.caption || fileName;
 
     try {
-        // دریافت اطلاعات فایل شامل file_path از تلگرام بدون دانلود خود فایل
-        const file = await bot.getFile(fileId);
-        const filePath = file.file_path;
+        // گرفتن آدرس فایل مستقیم از طریق API رسمی تلگرام با axios
+        const res = await axios.get(`https://api.telegram.org/bot${token}/getFile?file_id=${fileId}`);
         
-        // ساخت لینک مستقیم و پایدار دانلود از سرور تلگرام
-        const directDownloadUrl = `https://api.telegram.org/file/bot${token}/${filePath}`;
-        
-        movies.push({
-            id: Date.now(),
-            title: caption,
-            videoUrl: directDownloadUrl
-        });
+        if (res.data && res.data.ok) {
+            const filePath = res.data.result.file_path;
+            const directDownloadUrl = `https://api.telegram.org/file/bot${token}/${filePath}`;
+            
+            movies.push({
+                id: Date.now(),
+                title: caption,
+                videoUrl: directDownloadUrl
+            });
 
-        bot.sendMessage(chatId, '✅ فیلم با موفقیت به آرشیو سایت اضافه شد!');
+            bot.sendMessage(chatId, '✅ فیلم با موفقیت به آرشیو سایت اضافه شد!');
+        } else {
+            bot.sendMessage(chatId, '❌ خطا در دریافت اطلاعات فایل از تلگرام.');
+        }
     } catch (error) {
-        console.error('Error processing video:', error);
+        console.error('Error fetching file path:', error.message);
         bot.sendMessage(chatId, '❌ خطا در ثبت فیلم. لطفا دوباره تلاش کنید.');
     }
 });
 
-// ارسال لیست فیلم‌ها به فرانت‌اند سایت
 app.get('/api/movies', (req, res) => {
     res.json(movies);
 });
