@@ -1,6 +1,5 @@
 const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
-const axios = require('axios');
 const path = require('path');
 
 const token = '8842470784:AAEgYN4qyK3cKBvtP2kRI_TzCEuqm0bpGFc';
@@ -11,48 +10,63 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// آرشیو فیلم‌ها
 let movies = [];
 
-// تابع مشترک برای پردازش و ثبت فایل دریافتی از تلگرام
-async function handleVideoFile(chatId, fileId, fileName, captionText) {
-    try {
-        const res = await axios.get(`https://api.telegram.org/bot${token}/getFile?file_id=${fileId}`);
+// ۱. روش اضافه کردن از طریق ربات (با ارسال متن حاوی نام و لینک مستقیم ویدیو)
+bot.on('message', (msg) => {
+    const chatId = msg.chat.id;
+    const text = msg.text;
+
+    // اگر کاربر دستور /start یا پیام معمولی فرستاد که لینک فیلم بود
+    if (text && !text.startsWith('/')) {
+        // فرض می‌کنیم پیام شامل نام فیلم و لینک مستقیم است (یا کاربر لینک رو می‌فرسته)
+        // مثلا فرمت: نام فیلم | لینک_مستقیم
+        const parts = text.split('|');
         
-        if (res.data && res.data.ok) {
-            const filePath = res.data.result.file_path;
-            const directDownloadUrl = `https://api.telegram.org/file/bot${token}/${filePath}`;
-            
+        let title = "فیلم سینمایی جدید";
+        let videoUrl = "";
+
+        if (parts.length >= 2) {
+            title = parts[0].trim();
+            videoUrl = parts[1].trim();
+        } else {
+            videoUrl = text.trim();
+        }
+
+        // چک می‌کنیم که آیا متن ارسال شده یک لینک معتبر است یا خیر
+        if (videoUrl.startsWith('http://') || videoUrl.startsWith('https://')) {
             movies.push({
                 id: Date.now(),
-                title: captionText || fileName,
-                videoUrl: directDownloadUrl
+                title: title,
+                videoUrl: videoUrl
             });
 
-            bot.sendMessage(chatId, '✅ فیلم با موفقیت به آرشیو سایت اضافه شد!');
+            bot.sendMessage(chatId, `✅ فیلم "${title}" با موفقیت به آرشیو سایت اضافه شد و الان قابل تماشا است!`);
         } else {
-            bot.sendMessage(chatId, '❌ خطا در دریافت لینک از تلگرام.');
+            bot.sendMessage(chatId, `🤖 راهنما:\nبرای افزودن فیلم به سایت، نام فیلم و لینک مستقیم ویدیو را با علامت | از هم جدا کرده و بفرستید.\n\nمثال:\nنام فیلم | https://example.com/video.mp4`);
         }
-    } catch (error) {
-        console.error('Error fetching file path details:', error.response?.data || error.message);
-        bot.sendMessage(chatId, '❌ خطا در ثبت فیلم. لطفا دوباره تلاش کنید.');
-    }
-}
-
-// گوش دادن به ویدیوهای معمولی
-bot.on('video', (msg) => {
-    handleVideoFile(msg.chat.id, msg.video.file_id, msg.video.file_name || 'فیلم سینمایی', msg.caption);
-});
-
-// گوش دادن به ویدیوهایی که به صورت فایل/داکیومنت ارسال میشن (حجم اصلی)
-bot.on('document', (msg) => {
-    const mimeType = msg.document.mime_type || '';
-    if (mimeType.startsWith('video/')) {
-        handleVideoFile(msg.chat.id, msg.document.file_id, msg.document.file_name || 'فیلم سینمایی', msg.caption);
     }
 });
 
+// ۲. API برای دریافت لیست فیلم‌ها در سایت
 app.get('/api/movies', (req, res) => {
     res.json(movies);
+});
+
+// ۳. API برای افزودن فیلم مستقیماً از داخل سایت (اختیاری و فوق‌العاده کاربردی)
+app.post('/api/movies', (req, res) => {
+    const { title, videoUrl } = req.body;
+    if (videoUrl) {
+        movies.push({
+            id: Date.now(),
+            title: title || 'فیلم بدون نام',
+            videoUrl: videoUrl
+        });
+        res.json({ success: true, message: 'فیلم با موفقیت اضافه شد!' });
+    } else {
+        res.status(400).json({ success: false, message: 'لینک ویدیو الزامی است.' });
+    }
 });
 
 app.listen(PORT, () => {
